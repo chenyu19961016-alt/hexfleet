@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<title>海克斯大乱斗 · 5人车队预约</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Rajdhani:wght@600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#05070d;
+  --cyan:#29f0dd;
+  --gold:#e3c07c;
+  --purple:#7b5cff;
+  --txt:#eaf0ff;
+  --txt2:#8695bd;
+  --txt3:#5b688c;
+  --line:rgba(126,164,255,.16);
+  --ok:#3ddc97;
+  --warn:#ffb45c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;color:var(--txt);
+  font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(120% 70% at 50% -15%, #16274a 0%, #0a1020 42%, #04060c 100%);
+  background-attachment:fixed;
+  padding-bottom:120px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    repeating-linear-gradient(60deg, rgba(112,160,255,.055) 0 1px, transparent 1px 42px),
+    repeating-linear-gradient(-60deg, rgba(112,160,255,.055) 0 1px, transparent 1px 42px),
+    repeating-linear-gradient(0deg, rgba(112,160,255,.035) 0 1px, transparent 1px 36px);
+  mask-image:radial-gradient(100% 60% at 50% 0%, #000 0%, transparent 80%);
+  -webkit-mask-image:radial-gradient(100% 60% at 50% 0%, #000 0%, transparent 80%);
+}
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:22px 16px 0}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo{
+  width:40px;height:44px;flex:0 0 auto;position:relative;
+  background:linear-gradient(160deg,var(--gold) 0%,#7a5f28 70%);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  display:flex;align-items:center;justify-content:center;
+  filter:drop-shadow(0 0 14px rgba(227,192,124,.35));
+}
+.logo::after{
+  content:"";position:absolute;inset:1.6px;
+  background:radial-gradient(circle at 50% 40%, #16324d 0%, #060b16 75%);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.logo i{
+  position:relative;z-index:1;width:15px;height:17px;
+  background:linear-gradient(180deg,var(--cyan),#0a6a63);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  box-shadow:0 0 12px rgba(41,240,221,.8);
+}
+.ttl{flex:1;min-width:0}
+.ttl h1{
+  margin:0;font-size:20px;font-weight:900;letter-spacing:.02em;
+  background:linear-gradient(100deg,#fff6df 0%,var(--gold) 55%,#a9863f 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ttl p{margin:2px 0 0;font-family:Rajdhani,sans-serif;font-size:10px;letter-spacing:.2em;color:var(--txt3);text-transform:uppercase}
+.syncchip{
+  flex:0 0 auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;
+  border-radius:11px;border:1px solid rgba(61,220,151,.35);background:rgba(61,220,151,.1);
+  color:#a8f2cd;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.syncchip i{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite}
+.syncchip.off{border-color:rgba(255,180,92,.35);background:rgba(255,180,92,.1);color:#ffd7a3}
+.syncchip.off i{background:var(--warn);box-shadow:0 0 8px var(--warn);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.statline{
+  display:flex;flex-wrap:wrap;gap:5px 12px;font-size:12px;color:var(--txt2);
+  margin:0 0 14px;padding-left:2px;line-height:1.5;
+}
+.statline span{white-space:nowrap}
+.statline b{color:var(--cyan);font-weight:700}
+
+/* ---------- date strip ---------- */
+.dates{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.dbtn{
+  flex:0 0 auto;min-width:58px;padding:8px 10px 7px;border-radius:12px;
+  background:rgba(255,255,255,.028);border:1px solid rgba(126,164,255,.13);
+  color:var(--txt2);cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:2px;position:relative;transition:.18s;font-family:inherit;
+}
+.dbtn .dw{font-size:11.5px;letter-spacing:.03em}
+.dbtn .dd{font-family:Rajdhani,sans-serif;font-size:12.5px;font-weight:600;color:var(--txt3)}
+.dbtn .dot{position:absolute;top:5px;right:6px;width:4px;height:4px;border-radius:50%;background:var(--cyan);opacity:.75}
+.dbtn.on{
+  background:linear-gradient(180deg,rgba(227,192,124,.16),rgba(227,192,124,.04));
+  border-color:rgba(227,192,124,.55);color:#fff;
+  box-shadow:0 0 0 1px rgba(227,192,124,.15),0 6px 18px -10px rgba(227,192,124,.8);
+}
+.dbtn.on .dd{color:var(--gold)}
+.dbtn.on .dot{background:var(--gold)}
+
+/* ---------- car card ---------- */
+.cars{display:flex;flex-direction:column;gap:14px}
+.car{
+  position:relative;border-radius:18px;padding:14px 14px 12px;
+  background:linear-gradient(180deg,rgba(20,33,60,.92),rgba(8,13,24,.96));
+  border:1px solid rgba(126,164,255,.17);
+  box-shadow:0 18px 40px -28px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+.car::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(227,192,124,.7),transparent)}
+.car.full::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.car.full{box-shadow:0 0 0 1px rgba(41,240,221,.16),0 20px 44px -26px rgba(41,240,221,.5)}
+
+.chead{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.time{font-family:Rajdhani,sans-serif;font-size:21px;font-weight:700;letter-spacing:.04em;color:#fff;cursor:pointer;line-height:1}
+.time small{font-size:10px;color:var(--txt3);letter-spacing:.12em;margin-left:6px;font-family:"Noto Sans SC";font-weight:400}
+.badge{font-style:normal;font-size:10.5px;padding:3px 8px;border-radius:99px;border:1px solid rgba(255,180,92,.35);color:var(--warn);background:rgba(255,180,92,.08)}
+.badge.full{border-color:rgba(61,220,151,.4);color:var(--ok);background:rgba(61,220,151,.09)}
+.chead .grow{flex:1}
+.mini{
+  width:26px;height:26px;border-radius:8px;border:1px solid var(--line);
+  background:rgba(126,164,255,.05);color:var(--txt3);font-size:13px;cursor:pointer;line-height:1;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.mini:active{background:rgba(126,164,255,.13);color:var(--txt)}
+
+.seats{display:flex;gap:5px;justify-content:space-between}
+.seat{flex:1;min-width:0;background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:inherit}
+.hx{
+  width:100%;aspect-ratio:1/1.14;padding:1.4px;display:block;
+  background:linear-gradient(160deg,rgba(126,164,255,.42),rgba(126,164,255,.1));
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:.2s;
+}
+.hxi{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 35%,#0d1526 0%,#05080f 100%);
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  color:rgba(126,164,255,.5);font-family:Rajdhani,sans-serif;font-size:17px;font-weight:600;
+}
+.seat.filled .hx{background:linear-gradient(160deg,var(--gold) 0%,#8a6c31 55%,#4b3917 100%);filter:drop-shadow(0 0 10px rgba(227,192,124,.28))}
+.seat.filled .hxi{background:linear-gradient(170deg,#1d2942 0%,#0a1020 100%);color:var(--gold);font-size:16px;font-weight:700;text-shadow:0 0 10px rgba(227,192,124,.5)}
+.seat.me.filled .hx{background:linear-gradient(160deg,var(--cyan),#0b6b64);filter:drop-shadow(0 0 12px rgba(41,240,221,.4))}
+.seat.me.filled .hxi{color:var(--cyan);text-shadow:0 0 12px rgba(41,240,221,.55)}
+.seat:active .hx{transform:scale(.94)}
+.sn{width:100%;font-size:11px;color:var(--txt2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seat.filled .sn{color:#dfe7fb}
+.seat.me .sn{color:var(--cyan)}
+.seat.empty .hxi{color:rgba(41,240,221,.55)}
+.seat.empty .sn{color:var(--txt3)}
+.tagcap{
+  font-size:8.5px;padding:0 5px;border-radius:99px;border:1px solid rgba(227,192,124,.45);
+  color:var(--gold);background:rgba(227,192,124,.1);height:14px;line-height:13px;
+}
+
+.subsrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:11px;padding-top:10px;border-top:1px dashed rgba(126,164,255,.13)}
+.subsrow .lab{font-size:10.5px;color:var(--txt3);letter-spacing:.06em}
+.chip{font-size:11px;padding:4px 9px;border-radius:99px;cursor:pointer;border:1px solid rgba(255,180,92,.28);background:rgba(255,180,92,.07);color:#f2cf9a;font-family:inherit}
+.chip.ghost{color:var(--txt3);border-color:rgba(126,164,255,.2);background:rgba(126,164,255,.05)}
+.chip:active{filter:brightness(1.2)}
+
+.cfoot{display:flex;gap:8px;margin-top:12px}
+.cfoot .btn{flex:1}
+
+/* buttons */
+.btn{
+  height:42px;border-radius:12px;border:1px solid rgba(126,164,255,.2);
+  background:rgba(126,164,255,.08);color:var(--txt);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;
+  transition:.16s;width:100%;
+}
+.btn:active{transform:scale(.985);filter:brightness(1.15)}
+.btn.primary{background:linear-gradient(160deg,#26e6d3,#0a8f85);border-color:transparent;color:#02201e;font-weight:700;box-shadow:0 10px 26px -14px rgba(41,240,221,.9)}
+.btn.gold{background:linear-gradient(160deg,#edcd8b,#a6843e);border-color:transparent;color:#231a06;font-weight:700;box-shadow:0 10px 26px -14px rgba(227,192,124,.9)}
+.btn.ghost{background:rgba(255,255,255,.02);color:var(--txt2);border-color:rgba(126,164,255,.18)}
+.btn.danger{color:#ff8b8b;border-color:rgba(255,110,110,.3);background:rgba(255,110,110,.07)}
+.btn.sm{height:34px;font-size:12px;border-radius:10px}
+
+.emptycard{border-radius:18px;border:1px dashed rgba(126,164,255,.25);background:rgba(255,255,255,.02);padding:26px 18px;text-align:center}
+.emptycard .big{font-size:15px;color:var(--txt);margin-bottom:6px}
+.emptycard p{font-size:12px;color:var(--txt3);margin:0 0 16px}
+
+/* sync banner */
+.banner{
+  display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:11px 13px;border-radius:14px;
+  background:linear-gradient(90deg,rgba(123,92,255,.14),rgba(41,240,221,.05));
+  border:1px solid rgba(123,92,255,.35);cursor:pointer;
+}
+.banner .bt{flex:1;font-size:12px;color:#d9d3ff;line-height:1.5}
+.banner .bt b{color:#fff;font-weight:700}
+.banner .go{font-size:11px;color:#a7ffe9;border:1px solid rgba(41,240,221,.4);padding:4px 9px;border-radius:99px;white-space:nowrap}
+
+.tip{margin-top:16px;padding:12px 14px;border-radius:14px;background:linear-gradient(180deg,rgba(41,240,221,.06),rgba(41,240,221,.02));border:1px solid rgba(41,240,221,.16)}
+.tip h4{margin:0 0 6px;font-size:12px;color:var(--cyan);font-weight:700;letter-spacing:.04em}
+.tip p{margin:0;font-size:11.5px;line-height:1.75;color:var(--txt2)}
+.tip b{color:#dfe7fb;font-weight:500}
+
+/* dock */
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(4,6,12,0),rgba(4,6,12,.9) 35%,#04060c);
+  backdrop-filter:blur(6px);
+}
+.dock .inner{max-width:520px;margin:0 auto;display:flex;gap:10px}
+.dock .btn{flex:1}
+
+/* sheet */
+.mask{position:fixed;inset:0;z-index:50;background:rgba(2,4,9,.62);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.2s}
+.mask.on{opacity:1;pointer-events:auto}
+.panel{
+  width:100%;max-width:520px;max-height:88vh;overflow:auto;
+  background:linear-gradient(180deg,#101b31,#0a1020);
+  border:1px solid rgba(126,164,255,.22);border-bottom:0;
+  border-radius:20px 20px 0 0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));
+  transform:translateY(16px);transition:.22s;box-shadow:0 -20px 50px rgba(0,0,0,.6);
+}
+.mask.on .panel{transform:none}
+.panel h3{margin:0 0 4px;font-size:16px;color:#fff;font-weight:700;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.panel h3::before{content:"";width:4px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--gold),#7a5f28)}
+.panel .desc{margin:0 0 14px;font-size:11.5px;color:var(--txt3);line-height:1.7}
+.fld{display:block;margin-bottom:12px}
+.fld span{display:block;font-size:11px;color:var(--txt2);margin-bottom:6px;letter-spacing:.04em}
+.fld input,.fld textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(126,164,255,.2);
+  border-radius:10px;padding:11px 12px;color:#fff;font-size:14px;font-family:inherit;outline:none;line-height:1.6;
+}
+.fld input:focus,.fld textarea:focus{border-color:rgba(41,240,221,.5);background:rgba(41,240,221,.05)}
+.fld textarea{resize:vertical;min-height:110px;font-size:13px}
+.fld input:disabled{opacity:.65}
+.panel .btn{margin-bottom:9px}
+.panel .btn:last-child{margin-bottom:0}
+.codebox{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 14px;border-radius:12px;margin-bottom:12px;
+  background:linear-gradient(120deg,rgba(41,240,221,.12),rgba(123,92,255,.12));
+  border:1px solid rgba(41,240,221,.3);
+}
+.codebox .cl{font-size:11px;color:var(--txt3)}
+.codebox .cv{font-family:Rajdhani,sans-serif;font-size:22px;font-weight:700;letter-spacing:.16em;color:#9ffff0}
+.hr{height:1px;background:rgba(126,164,255,.13);margin:14px 0}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translate(-50%,10px);z-index:80;
+  background:rgba(20,32,56,.96);border:1px solid rgba(41,240,221,.4);
+  color:#eaf6ff;font-size:13px;padding:9px 16px;border-radius:99px;
+  opacity:0;pointer-events:none;transition:.22s;max-width:90vw;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:360px){
+  .seat .sn{font-size:10px}
+  .time{font-size:19px}
+  .ttl h1{font-size:18px}
+  .syncchip{padding:0 8px;font-size:10.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i></i></div>
+    <div class="ttl">
+      <h1>海克斯大乱斗</h1>
+      <p>Hextech Brawl · 5-Man Fleet</p>
+    </div>
+    <button class="syncchip" id="syncChip" data-act="syncPanel"><i></i><span>本地</span></button>
+  </header>
+
+  <div id="banner"></div>
+  <div class="statline" id="statline"></div>
+
+  <section class="dates" id="dates"></section>
+  <main class="cars" id="cars"></main>
+
+  <div class="tip">
+    <h4>群里怎么用</h4>
+    <p><b>1</b> 开启「群同步」→ 把车队码和链接发到微信群<br>
+       <b>2</b> 群友点链接直接上号抢位，谁上车谁下车全群实时同步<br>
+       <b>3</b> 断网也能操作，恢复后自动合并；接龙导入同样保留</p>
+  </div>
+</div>
+
+<div class="dock">
+  <div class="inner">
+    <button class="btn primary" data-act="copyAll">复制接龙文案</button>
+    <button class="btn gold" data-act="import">粘贴接龙导入</button>
+  </div>
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+<script src="https://fastly.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script>
+/* ===================== 基础 ===================== */
+const WK=['周日','周一','周二','周三','周四','周五','周六'];
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parseD=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const uid=n=>Math.random().toString(36).slice(2,2+(n||7));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:v;}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,v);}catch(e){}},
+  del(k){try{localStorage.removeItem(k);}catch(e){}}
+};
+
+let ME_NAME=LS.get('hf.name','')||'';
+let ME_PID=LS.get('hf.pid','')||'';
+if(!ME_PID){ ME_PID='P'+uid(8); LS.set('hf.pid',ME_PID); }
+
+let curDate=dstr(new Date());
+let CODE='';
+let OPS=[];
+let STATE={cars:[]};
+
+/* ===================== 车队码 / 存储 ===================== */
+function codeFromUrl(){
+  const h=location.hash||'', q=location.search||'';
+  const m=h.match(/c=([A-Za-z0-9]{4,10})/)||q.match(/c=([A-Za-z0-9]{4,10})/);
+  return m? m[1].toUpperCase() : '';
+}
+const opsKey=c=>'hf.ops.'+(c||'local');
+
+function loadOps(){
+  OPS=[];
+  try{ const raw=LS.get(opsKey(CODE),''); if(raw){ const d=JSON.parse(raw); if(Array.isArray(d)) OPS=d; } }catch(e){}
+  sortOps(); prune(); derive();
+}
+function saveOps(){ LS.set(opsKey(CODE), JSON.stringify(OPS)); }
+function sortOps(){ OPS.sort((a,b)=>(a.t||0)-(b.t||0)||String(a.o).localeCompare(String(b.o))); }
+function prune(){
+  const today=dstr(new Date());
+  const dropIds=new Set();
+  OPS.forEach(o=>{
+    if(o.k==='car'&&o.d){
+      const diff=(parseD(today)-parseD(o.d))/86400000;
+      if(diff>30||diff<-45) dropIds.add(o.c);
+    }
+  });
+  OPS=OPS.filter(o=>!dropIds.has(o.c) && !(o.k==='delcar'&&o.t<Date.now()-30*86400000));
+  while(OPS.length>2500) OPS.shift();
+}
+
+/* ===================== 状态派生：并发安全 ===================== */
+function derive(){
+  const cars=new Map();
+  OPS.forEach(op=>{
+    if(op.k==='car'){
+      if(!cars.has(op.c)) cars.set(op.c,{id:op.c,date:op.d,time:op.tm||'20:00',dead:false,jm:new Map(),lm:new Map(),tm:null});
+    }else if(op.k==='delcar'){
+      const c=cars.get(op.c); if(c) c.dead=true;
+    }else if(op.k==='time'){
+      const c=cars.get(op.c); if(c&&(!c.tm||(op.t||0)>=c.tm.t)) c.tm={t:op.t||0,v:op.tm};
+    }else if(op.k==='join'){
+      const c=cars.get(op.c); if(!c||!op.p) return;
+      const prev=c.jm.get(op.p.id);
+      if(!prev||(op.t||0)>=prev.t) c.jm.set(op.p.id,{t:op.t||0,name:op.p.name,note:op.p.note||'',s:op.p.s||op.t||0,w:op.p.w||0});
+    }else if(op.k==='leave'){
+      const c=cars.get(op.c); if(!c) return;
+      const prev=c.lm.get(op.x);
+      if(!prev||(op.t||0)>=prev) c.lm.set(op.x,op.t||0);
+    }else if(op.k==='note'){
+      const c=cars.get(op.c); if(!c) return;
+      const p=c.jm.get(op.x); if(p) p.note=op.n;
+    }
+  });
+  const out=[];
+  cars.forEach(c=>{
+    if(c.dead) return;
+    const players=[];
+    c.jm.forEach((p,pid)=>{
+      const lt=c.lm.get(pid);
+      if(!lt||p.t>lt) players.push({id:pid,name:p.name,note:p.note,s:p.s,w:p.w||0});
+    });
+    players.sort((a,b)=>(a.w-b.w)||(a.s-b.s)||String(a.id).localeCompare(String(b.id)));
+    out.push({id:c.id,date:c.date,time:(c.tm?c.tm.v:c.time),players});
+  });
+  STATE={cars:out};
+}
+
+/* ===================== 写入 ===================== */
+function pushOp(op){
+  op.o=op.o||('o'+uid(9)); op.t=op.t||Date.now();
+  OPS.push(op); sortOps(); saveOps(); derive(); render(); publishOps();
+}
+
+/* ===================== 渲染 ===================== */
+function relLabel(s){
+  const today=dstr(new Date()), t1=dstr(new Date(Date.now()+86400000));
+  if(s===today) return '今天'; if(s===t1) return '明天';
+  return WK[parseD(s).getDay()];
+}
+const md=s=>{const d=parseD(s);return (d.getMonth()+1)+'月'+d.getDate()+'日';};
+const carsOf=s=>STATE.cars.filter(c=>c.date===s).sort((a,b)=>a.time.localeCompare(b.time));
+const findCar=id=>STATE.cars.find(c=>c.id===id);
+
+function renderDates(){
+  const arr=[]; for(let i=0;i<10;i++){const d=new Date();d.setDate(d.getDate()+i);arr.push(dstr(d));}
+  document.getElementById('dates').innerHTML=arr.map(s=>{
+    const d=parseD(s), has=carsOf(s).length>0;
+    return `<button class="dbtn ${s===curDate?'on':''}" data-act="selDate" data-date="${s}">
+      <span class="dw">${relLabel(s)}</span><span class="dd">${d.getMonth()+1}/${d.getDate()}</span>
+      ${has?'<i class="dot"></i>':''}</button>`;
+  }).join('');
+}
+
+function renderStat(){
+  const cars=carsOf(curDate), cap=cars.length*5;
+  const seated=cars.reduce((a,c)=>a+Math.min(5,c.players.length),0);
+  const full=cars.filter(c=>c.players.length>=5).length;
+  const el=document.getElementById('statline');
+  if(!cars.length){
+    el.innerHTML=`<span>${md(curDate)} ${relLabel(curDate)}</span><span>今天还没开车，先开一车</span>`;
+    return;
+  }
+  el.innerHTML=`<span>${md(curDate)} ${relLabel(curDate)}</span><span>共 <b>${cars.length}</b> 车</span>`+
+    `<span>已上 <b>${seated}/${cap}</b> 人</span><span>成团 <b>${full}</b> 车</span>`;
+}
+
+function renderSync(){
+  const chip=document.getElementById('syncChip');
+  const label=chip.querySelector('span');
+  if(CODE){
+    chip.className='syncchip'+((client&&connected)?'':' off');
+    const n=onlineCount();
+    label.textContent=(client&&connected)? (n>1?`实时 · ${n}人`:'实时同步'):(mqttBroken?'同步不可用':'连接中…');
+  }else{
+    chip.className='syncchip off'; label.textContent='本地';
+  }
+  document.getElementById('banner').innerHTML = CODE ? '' :
+    `<div class="banner" data-act="syncPanel">
+       <div class="bt"><b>还没开群同步</b>：现在只有这台设备看得到，开启后全群一起抢位</div>
+       <div class="go">开启</div></div>`;
+}
+
+function seatHTML(car,i){
+  const p=car.players[i];
+  if(!p){
+    return `<button class="seat empty" data-act="addSeat" data-car="${car.id}" data-idx="${i}">
+      <span class="hx"><span class="hxi">+</span></span><span class="sn">空位</span></button>`;
+  }
+  const isMe=p.id===ME_PID;
+  return `<button class="seat filled ${isMe?'me':''}" data-act="seat" data-car="${car.id}" data-pid="${p.id}">
+    <span class="hx"><span class="hxi">${esc([...(p.name||'?')][0])}</span></span>
+    <span class="sn">${esc(p.name)}</span>
+    ${i===0?'<span class="tagcap">车长</span>':''}</button>`;
+}
+
+function carHTML(car){
+  const n=Math.min(5,car.players.length), full=n>=5;
+  const subs=car.players.slice(5);
+  const subsHtml=subs.map((p,i)=>`<button class="chip" data-act="subMenu" data-car="${car.id}" data-pid="${p.id}">${i+1}. ${esc(p.name)}</button>`).join('');
+  return `<section class="car ${full?'full':''}">
+    <div class="chead">
+      <div class="time" data-act="editTime" data-car="${car.id}">${esc(car.time)}<small>开黑</small></div>
+      <em class="badge ${full?'full':''}">${full?'满员发车':'差 '+(5-n)+' 人'}</em>
+      <div class="grow"></div>
+      <button class="mini" data-act="delCar" data-car="${car.id}" title="删除车次">✕</button>
+    </div>
+    <div class="seats">${[0,1,2,3,4].map(i=>seatHTML(car,i)).join('')}</div>
+    <div class="subsrow">
+      <span class="lab">候补</span>
+      ${subsHtml||'<span class="chip ghost" style="pointer-events:none">暂无</span>'}
+      <button class="chip ghost" data-act="addSub" data-car="${car.id}">＋ 候补</button>
+    </div>
+    <div class="cfoot">
+      <button class="btn ghost sm" data-act="newCarSameTime" data-car="${car.id}">＋ 加开一场</button>
+      <button class="btn ghost sm" data-act="copyCar" data-car="${car.id}">复制本车</button>
+    </div>
+  </section>`;
+}
+
+function renderCars(){
+  const cars=carsOf(curDate), box=document.getElementById('cars');
+  if(!cars.length){
+    box.innerHTML=`<div class="emptycard">
+      <div class="big">${md(curDate)} ${relLabel(curDate)} 还没开车</div>
+      <p>一车 5 个位，${CODE?'全群就能一起抢位':'把文案发群里约起来'}</p>
+      <button class="btn primary" data-act="newCar">＋ 开一车</button></div>`;
+    return;
+  }
+  box.innerHTML=cars.map(carHTML).join('')+
+    `<button class="btn ghost" data-act="newCar" style="margin-top:2px">＋ 加开一车次</button>`;
+}
+
+function render(){ renderSync(); renderDates(); renderStat(); renderCars(); }
+
+/* ===================== 弹层 ===================== */
+const mask=document.getElementById('mask');
+function closeSheet(){ mask.classList.remove('on'); mask.innerHTML=''; }
+mask.addEventListener('click',e=>{ if(e.target===mask) closeSheet(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeSheet(); } });
+
+function openSheet({title,desc='',fields=[],actions=[],html=''}){
+  let body=html;
+  body+=fields.map((f,i)=>{
+    const val=esc(f.value||'');
+    const dis=f.disabled?'disabled':'';
+    return `<label class="fld"><span>${esc(f.label||'')}</span>`+
+      (f.type==='textarea'
+        ? `<textarea id="sf${i}" rows="6" placeholder="${esc(f.ph||'')}">${val}</textarea>`
+        : `<input id="sf${i}" type="${f.type||'text'}" ${f.type==='time'?'step="300"':''} ${dis} placeholder="${esc(f.ph||'')}" value="${val}" ${f.max?`maxlength="${f.max}"`:''}>`)+'</label>';
+  }).join('');
+  body+=actions.map((a,i)=>`<button class="btn ${a.cls||''}" data-si="${i}">${a.label}</button>`).join('');
+  mask.innerHTML=`<div class="panel"><h3>${esc(title)}</h3>${desc?`<p class="desc">${desc}</p>`:''}${body}</div>`;
+  mask.classList.add('on');
+  mask.querySelectorAll('[data-si]').forEach(btn=>{
+    btn.onclick=()=>{
+      const vals=fields.map((_,i)=>((mask.querySelector('#sf'+i)||{}).value||'').trim());
+      const a=actions[+btn.dataset.si];
+      let keep=false;
+      if(a.fn){ const r=a.fn(vals); if(r===false) keep=true; }
+      if(!keep){ closeSheet(); render(); saveOps(); }
+    };
+  });
+  if(window.innerWidth>500){ const f=mask.querySelector('input:not([disabled]),textarea'); if(f) setTimeout(()=>f.focus(),120); }
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),1900);
+}
+async function copyText(text){
+  try{ if(navigator.clipboard&&window.isSecureContext){ await navigator.clipboard.writeText(text); return true; } }catch(e){}
+  try{
+    const ta=document.createElement('textarea'); ta.value=text;
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand('copy'); document.body.removeChild(ta); return ok;
+  }catch(e){ return false; }
+}
+
+/* ===================== 同步（MQTT 公共通道） ===================== */
+const BROKER='wss://broker.emqx.io:8084/mqtt';
+let client=null, connected=false, presenceTimer=null, pubTimer=null, gotRemote=false, mqttBroken=false;
+const peers=new Map();
+const topicMain=()=>'hfleet/v2/'+CODE;
+const topicPeer=()=>'hfleet/v2/'+CODE+'/peers';
+
+function onlineCount(){
+  const now=Date.now(); let n=connected?1:0;
+  peers.forEach((v,k)=>{ if(now-v.t<75000&&k!==ME_PID) n++; });
+  return n;
+}
+function shareLink(){
+  if(!CODE) return '';
+  const base=location.origin+location.pathname;
+  return /^https?:/.test(location.href)? base+'#c='+CODE : '';
+}
+function setCode(c){
+  disconnect();
+  CODE=(c||'').toUpperCase(); LS.set('hf.code',CODE);
+  loadOps(); render();
+  if(CODE) connect(); else disconnect();
+}
+function connect(){
+  if(!CODE||client) return;
+  if(typeof mqtt==='undefined'){
+    mqttBroken=true; toast('同步组件没加载出来，先按本地模式用'); render(); return;
+  }
+  client=mqtt.connect(BROKER,{
+    clientId:'hf_'+CODE+'_'+ME_PID.slice(0,8)+'_'+uid(3),
+    clean:true,keepalive:30,reconnectPeriod:4000,connectTimeout:12000
+  });
+  client.on('connect',()=>{
+    connected=true; gotRemote=false;
+    client.subscribe(topicMain(),{qos:0});
+    client.subscribe(topicPeer(),{qos:0});
+    startPresence(); render();
+    // 先等保留消息到齐再合并上送，避免空状态覆盖别人
+    setTimeout(()=>{ if(OPS.length) publishOps(true); },1200);
+  });
+  client.on('close',()=>{ connected=false; stopPresence(); render(); });
+  client.on('error',()=>{ connected=false; render(); });
+  client.on('message',(t,payload)=>{
+    let msg; try{ msg=JSON.parse(String(payload)); }catch(e){ return; }
+    if(t===topicPeer()){
+      if(msg&&msg.id&&msg.id!==ME_PID){ peers.set(msg.id,{name:msg.name||'',t:Date.now()}); renderSync(); renderStat(); }
+      return;
+    }
+    if(msg&&Array.isArray(msg.ops)){
+      gotRemote=true;
+      const before=OPS.length;
+      const added=mergeOps(msg.ops);
+      if(added>0){
+        const joins=msg.ops.filter(o=>o.k==='join');
+        if(joins.length&&joins.length<=3){
+          const nm=joins[0].p&&joins[0].p.name;
+          if(nm&&joins[0].p.id!==ME_PID) toast(nm+' 上了车');
+        }
+        if(msg.ops.length<OPS.length) setTimeout(()=>publishOps(true),700);
+        render();
+      }
+    }
+  });
+}
+function disconnect(){
+  stopPresence();
+  if(client){ try{client.end(true);}catch(e){} client=null; }
+  connected=false; peers.clear();
+}
+function mergeOps(list){
+  const have=new Set(OPS.map(o=>o.o)); let n=0;
+  (list||[]).forEach(o=>{ if(o&&o.o&&!have.has(o.o)){ OPS.push(o); have.add(o.o); n++; } });
+  if(n){ sortOps(); prune(); saveOps(); derive(); }
+  return n;
+}
+function publishOps(now){
+  if(!client||!connected||!CODE) return;
+  if(!OPS.length&&gotRemote===false&&now!==true) return;
+  clearTimeout(pubTimer);
+  const doPub=()=>{ if(client&&connected&&OPS.length) client.publish(topicMain(),JSON.stringify({v:2,code:CODE,ts:Date.now(),ops:OPS}),{qos:0,retain:true}); };
+  if(now) doPub(); else pubTimer=setTimeout(doPub,450);
+}
+function hi(){
+  if(!client||!connected) return;
+  client.publish(topicPeer(),JSON.stringify({id:ME_PID,name:ME_NAME||'匿名',t:Date.now()}),{qos:0,retain:false});
+}
+function startPresence(){ stopPresence(); hi(); presenceTimer=setInterval(hi,20000); }
+function stopPresence(){ if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null;} }
+
+/* ===================== 群同步面板 ===================== */
+function newCode(){
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:5},()=>abc[Math.floor(Math.random()*abc.length)]).join('');
+}
+function syncPanel(){
+  if(CODE){
+    const link=shareLink();
+    openSheet({
+      title:'群同步',
+      desc:'把链接丢到微信群，谁点开谁就在同一个车队里，改动实时同步。',
+      html:`<div class="codebox">
+        <div><div class="cl">车队码</div><div class="cv">${esc(CODE)}</div></div>
+        <div style="font-size:11px;color:${connected?'#9ffff0':'#ffd7a3'}" id="codeStatus">${connected?'● 已连接 · 在线 '+onlineCount()+' 人':'○ 连接中…'}</div></div>`,
+      fields: link?[{label:'群链接（点开即加入）',value:link,disabled:true}]:[],
+      actions:[
+        {label:'复制群链接',cls:'primary',fn:()=>{
+          if(!link){ toast('本地文件没法分享，请用发布后的在线链接'); return false; }
+          copyText(link).then(ok=>toast(ok?'群链接已复制，发到群里即可':'复制失败，长按手动复制'));
+          return false;
+        }},
+        {label:'只复制车队码',cls:'ghost',fn:()=>{ copyText(CODE).then(()=>toast('车队码已复制')); return false; }},
+        {label:'加入另一个车队',cls:'ghost',fn:()=>setTimeout(joinPanel,80)},
+        {label:'退出群同步',cls:'danger',fn:()=>{
+          if(!confirm('退出后改动只存在本机，确定？')) return false;
+          LS.del('hf.code'); disconnect(); CODE=''; loadOps(); render(); toast('已切回本地模式');
+        }},
+        {label:'关闭',cls:'ghost'}
+      ]});
+    const iv=setInterval(()=>{
+      const el=document.getElementById('codeStatus');
+      if(!el){ clearInterval(iv); return; }
+      el.style.color=connected?'#9ffff0':'#ffd7a3';
+      el.textContent=(client&&connected)? ('● 已连接 · 在线 '+onlineCount()+' 人'):'○ 连接中…';
+    },2000);
+    return;
+  }
+  openSheet({
+    title:'开启群同步',
+    desc:'建一个车队码，全群共用一张车队表：谁上车、谁候补、几点开黑，所有人实时同步。',
+    actions:[
+      {label:'创建新车队（我当车长）',cls:'primary',fn:()=>{
+        const c=newCode(); setCode(c); publishOps(true);
+        setTimeout(syncPanel,400);
+      }},
+      {label:'输入车队码加入',cls:'ghost',fn:()=>setTimeout(joinPanel,80)},
+      {label:'继续本地用',cls:'ghost'}
+    ]});
+}
+function joinPanel(){
+  openSheet({
+    title:'加入车队',
+    desc:'填群主给的 5 位车队码；在微信里直接点群链接的话会自动加入。',
+    fields:[{label:'车队码',ph:'例如 ABCD2',max:6}],
+    actions:[
+      {label:'加入',cls:'primary',fn:v=>{
+        const c=(v[0]||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+        if(c.length<4){ toast('车队码不对'); return false; }
+        setCode(c); setTimeout(()=>publishOps(true),200); toast('正在接入 '+c);
+      }},
+      {label:'取消',cls:'ghost'}
+    ]});
+}
+function openSettings(){
+  openSheet({
+    title:'设置',
+    desc:'数据同时存在本机和云端，换手机用车队码就能接上。',
+    html:`<div class="fld"><span>我的昵称（高亮自己的位子）</span><input id="sfMe" value="${esc(ME_NAME)}" placeholder="填一次就好"></div>
+      <div class="fld"><span>当前状态</span><input value="${CODE?('车队码 '+CODE+(connected?' · 已连接':' · 连接中')):'本地模式（未同步）'}" disabled></div>`,
+    actions:[
+      {label:'保存昵称',cls:'primary',fn:()=>{
+        ME_NAME=(mask.querySelector('#sfMe').value||'').trim(); LS.set('hf.name',ME_NAME);
+        hi(); render(); toast('已保存'+(ME_NAME?'：'+ME_NAME:''));
+      }},
+      {label:CODE?'群同步设置':'开启群同步',cls:'ghost',fn:()=>setTimeout(syncPanel,80)},
+      {label:'导出备份 JSON',cls:'ghost',fn:exportBackup},
+      {label:'从备份恢复',cls:'ghost',fn:()=>document.getElementById('fileIn').click()},
+      {label:'清空本机缓存',cls:'danger',fn:()=>{
+        if(!confirm('只清这台设备的缓存，云端车队不受影响。继续？')) return false;
+        OPS=[]; saveOps(); derive(); render(); toast('本机缓存已清空');
+      }},
+      {label:'关闭',cls:'ghost'}
+    ]});
+}
+function exportBackup(){
+  const data={v:2,code:CODE,exportedAt:new Date().toISOString(),ops:OPS};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='海克斯车队备份-'+dstr(new Date())+(CODE?'-'+CODE:'')+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast('备份已导出');
+}
+document.getElementById('fileIn').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      const list=Array.isArray(d)?d:(d&&d.ops);
+      if(!Array.isArray(list)) throw 0;
+      const added=mergeOps(list); render(); publishOps();
+      toast('恢复完成，合并 '+added+' 条记录');
+    }catch(err){ toast('文件格式不对，恢复失败'); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+
+/* ===================== 文案 / 接龙 ===================== */
+function carText(car){
+  const n=Math.min(5,car.players.length);
+  const lines=['【海克斯大乱斗 · 5人车队】',`${md(car.date)} ${relLabel(car.date)} ${car.time} 开黑`,`车位 ${n}/5`];
+  for(let i=0;i<5;i++){
+    const p=car.players[i];
+    lines.push(`${i+1}. ${p? p.name+(i===0?'（车长）':'')+(p.note?` ${p.note}`:'') : '——'}`);
+  }
+  const subs=car.players.slice(5);
+  if(subs.length) lines.push(`候补：${subs.map((p,i)=>(i+1)+'.'+p.name).join(' ')}`);
+  lines.push('——————');
+  lines.push(n>=5?'已满员，候补的兄弟盯一下空位 👇':`还差 ${5-n} 人，接龙上车 👇`);
+  const link=shareLink();
+  lines.push(link? '点开直接抢位：'+link : '接龙：按序号往下接，或直接回「+1」');
+  return lines.join('\n');
+}
+function parseRoster(text){
+  const out=[];
+  const push=raw=>{
+    let line=String(raw||'').trim();
+    if(!line) return;
+    line=line.replace(/^[-–—·•\s]+/,'').replace(/^@/,'').trim();
+    if(!line) return;
+    if(/^(接龙|海克斯|车位|候补|还差|已满员|————+|【|下面是|点开|接龙：)/.test(line)) return;
+    if(line.length>24) line=line.slice(0,24);
+    if(!out.includes(line)) out.push(line);
+  };
+  text.split(/\r?\n/).forEach(raw=>{
+    let line=raw.trim(); if(!line) return;
+    const markers=(line.match(/\d+\s*[.、,，)）:：]\s*/g)||[]).length;
+    if(markers>1){ line.split(/\s*\d+\s*[.、,，)）:：]\s*/).forEach(p=>push(p)); return; }
+    const m=line.match(/^(?:#)?\d+\s*[.、,，)）:：]\s*(.+)$/);
+    if(m){ push(m[1]); return; }
+    if(/^\d+\s+/.test(line)){ push(line.replace(/^\d+\s+/,'')); return; }
+    push(line);
+  });
+  return out;
+}
+
+/* ===================== 交互 ===================== */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const act=t.dataset.act, carId=t.dataset.car, car=carId?findCar(carId):null;
+
+  if(act==='selDate'){ curDate=t.dataset.date; render(); return; }
+  if(act==='syncPanel'){ syncPanel(); return; }
+  if(act==='settings'){ openSettings(); return; }
+
+  if(act==='newCar'){
+    openSheet({title:'开一车',desc:`${md(curDate)} ${relLabel(curDate)} · 5 个座位`,
+      fields:[{label:'开黑时间',type:'time',value:'20:00'}],
+      actions:[{label:'开这一车',cls:'primary',fn:v=>pushOp({k:'car',c:'c'+uid(8),d:curDate,tm:(v[0]||'20:00')})},
+               {label:'取消',cls:'ghost'}]});
+    return;
+  }
+  if(act==='newCarSameTime'){
+    openSheet({title:'加开一场',desc:'同一天再来一车，时间可改',
+      fields:[{label:'开黑时间',type:'time',value:car.time}],
+      actions:[{label:'加开',cls:'primary',fn:v=>pushOp({k:'car',c:'c'+uid(8),d:car.date,tm:(v[0]||car.time)})},
+               {label:'取消',cls:'ghost'}]});
+    return;
+  }
+  if(act==='editTime'){
+    openSheet({title:'改开黑时间',desc:md(curDate)+' '+relLabel(curDate),
+      fields:[{label:'时间',type:'time',value:car.time}],
+      actions:[{label:'保存',cls:'primary',fn:v=>{ if(v[0]) pushOp({k:'time',c:car.id,tm:v[0]}); }},
+               {label:'取消',cls:'ghost'}]});
+    return;
+  }
+  if(act==='delCar'){
+    if(!confirm(`删掉 ${car.time} 这一车？全群都会看到它消失。`)) return;
+    pushOp({k:'delcar',c:car.id}); toast('已删除'); return;
+  }
+
+  if(act==='addSeat'||act==='addSub'){
+    const toSub=act==='addSub';
+    const full=car.players.length>=5;
+    openSheet({
+      title: toSub? '加候补' : '上车',
+      desc: toSub? '车满了也能排候补，有人下车自动补位'
+            : (full? '车位已满，这一单会排到候补' : `位子 ${(+t.dataset.idx||0)+1} · ${car.time} 开黑`),
+      fields:[
+        {label:'昵称（群里的称呼）',ph:'例如：阿俊',max:16,value:ME_NAME},
+        {label:'备注（可选）',ph:'例如：晚到 10 分钟',max:24}
+      ],
+      actions:[
+        {label:'确认',cls:'primary',fn:v=>{
+          const name=v[0]; if(!name){ toast('昵称不能为空'); return false; }
+          const isMe = (name===ME_NAME) || !ME_NAME;
+          if(isMe && !ME_NAME){ ME_NAME=name; LS.set('hf.name',ME_NAME); hi(); }
+          const pid = isMe? ME_PID : 'P'+uid(8);
+          if(car.players.some(p=>p.name===name)){ toast(name+' 已经在这辆车上'); return false; }
+          const maxS=car.players.reduce((a,p)=>Math.max(a,p.s),0);
+          const s=Math.max(Date.now(),maxS+1);
+          pushOp({k:'join',c:car.id,p:{id:pid,name,note:v[1]||'',s,w:toSub?1:0}});
+          toast((toSub||full?'已排进候补 ✔ ':'已上车 ✔ ')+name);
+        }},
+        {label:'取消',cls:'ghost'}
+      ]});
+    return;
+  }
+
+  if(act==='seat'){
+    const pid=t.dataset.pid, p=car.players.find(x=>x.id===pid);
+    if(!p) return;
+    const mine=p.id===ME_PID;
+    openSheet({
+      title:mine? p.name+'（我）':p.name,
+      desc:`${car.time} 开黑 · 位子 ${car.players.indexOf(p)+1}${p.note?' · '+esc(p.note):''}`,
+      actions:[
+        {label:mine?'我下车':'让 TA 下车',cls:'danger',fn:()=>{
+          const nxt=car.players.slice(5)[0];
+          pushOp({k:'leave',c:car.id,x:pid});
+          toast(nxt? nxt.name+' 自动补位上车':'已下车');
+        }},
+        {label:'关闭',cls:'ghost'}
+      ]});
+    return;
+  }
+
+  if(act==='subMenu'){
+    const pid=t.dataset.pid, p=car.players.find(x=>x.id===pid);
+    const hasSeat=car.players.length<5;
+    openSheet({
+      title:p.name+'（候补）',
+      desc:`${car.time} 开黑 · 当前 ${Math.min(5,car.players.length)}/5`,
+      actions:[
+        {label:hasSeat?'补位上车':'车满，先等等',cls:'primary',fn:()=>{
+          if(!hasSeat){ toast('车位满了，暂时补不上'); return false; }
+          const minS=car.players.reduce((a,x)=>Math.min(a,x.s),Date.now()+1e12);
+          pushOp({k:'join',c:car.id,p:{id:pid,name:p.name,note:p.note,s:minS-1,w:0}});
+          toast(p.name+' 补位成功 ✔');
+        }},
+        {label:p.id===ME_PID?'退出候补':'移出候补',cls:'danger',fn:()=>pushOp({k:'leave',c:car.id,x:pid})},
+        {label:'关闭',cls:'ghost'}
+      ]});
+    return;
+  }
+
+  if(act==='copyCar'){
+    copyText(carText(car)).then(ok=>toast(ok?'文案已复制，粘到群里即可':'复制失败，请长按复制'));
+    return;
+  }
+  if(act==='copyAll'){
+    const cars=carsOf(curDate);
+    if(!cars.length){ toast('这一天还没开车'); return; }
+    copyText(cars.map(carText).join('\n\n')).then(ok=>toast(ok?'接龙文案已复制 ✔':'复制失败'));
+    return;
+  }
+  if(act==='import'){
+    openSheet({
+      title:'粘贴群接龙导入',
+      desc:'把群里那段接龙整段贴进来（带「1. 2. 3.」序号也认），自动排进 '+md(curDate)+' 的车位。',
+      fields:[{label:'接龙内容',type:'textarea',ph:'1. 阿俊\n2. 小王\n3. 老张',max:2000}],
+      actions:[
+        {label:'解析并导入',cls:'primary',fn:v=>{
+          const names=parseRoster(v[0]||'');
+          if(!names.length){ toast('没识别到名字'); return false; }
+          let target=carsOf(curDate)[0];
+          if(!target){
+            const id='c'+uid(8);
+            pushOp({k:'car',c:id,d:curDate,tm:'20:00'});
+            target={id,date:curDate,time:'20:00',players:[]};
+          }
+          let seat=0,sub=0;
+          names.forEach((n,idx)=>{
+            const c=findCar(target.id); if(!c) return;
+            if(c.players.some(p=>p.name===n)) return;
+            if(c.players.length<5) seat++; else sub++;
+            const maxS=c.players.reduce((a,p)=>Math.max(a,p.s),0);
+            pushOp({k:'join',c:target.id,p:{id:'P'+uid(8),name:n,note:'',s:Math.max(Date.now()+idx*10,maxS+1)}});
+          });
+          toast(`导入 ${names.length} 位：上车 ${seat} · 候补 ${sub}`);
+        }},
+        {label:'取消',cls:'ghost'}
+      ]});
+    return;
+  }
+});
+
+/* ===================== 启动 ===================== */
+(function boot(){
+  CODE=codeFromUrl()||LS.get('hf.code','')||'';
+  if(CODE) LS.set('hf.code',CODE);
+  loadOps(); render();
+  if(CODE) connect();
+  setInterval(()=>{ if(CODE){ renderSync(); renderStat(); } },15000);
+  window.addEventListener('hashchange',()=>{
+    const c=codeFromUrl();
+    if(c&&c!==CODE){ setCode(c); }
+  });
+})();
+</script>
+</body>
+</html>
